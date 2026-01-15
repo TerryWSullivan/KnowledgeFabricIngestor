@@ -3,17 +3,6 @@
     const environment = "usw2.pure.cloud";
     const redirectUri = window.location.origin + window.location.pathname;
 
-    document.getElementById("loginButton").onclick = () => {
-        const authUrl =
-            `https://login.${environment}/oauth/authorize` +
-            `?response_type=token` +
-            `&client_id=${encodeURIComponent(clientId)}` +
-            `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-            `&scope=architect%20users%20notifications`;
-
-        window.location.href = authUrl;
-    };
-
     /* ================= HANDLE CALLBACK ================= */
     if (window.location.hash.includes('access_token')) {
         const params = new URLSearchParams(window.location.hash.substring(1));
@@ -155,4 +144,5 @@ updateAuthUI();
     };
 
     render();
+
 
