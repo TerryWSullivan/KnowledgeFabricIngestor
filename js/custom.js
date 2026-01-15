@@ -43,10 +43,18 @@
     }
 
     function logout() {
+    // Clear local app session
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('token_expiry');
-        location.reload();
-    }
+
+    // Redirect to Genesys logout, then back to this app
+        const returnUrl = encodeURIComponent(
+            window.location.origin + window.location.pathname
+        );
+        window.location.href =
+            `https://login.${environment}/logout?redirect_uri=${returnUrl}`;
+        }
+
     const authButton = document.getElementById('authButton');
 
     function renderAuthButton() {
@@ -149,6 +157,7 @@
     };
 
     render();
+
 
 
 
