@@ -2,6 +2,7 @@
     const clientId = "a08af3d6-15a6-48a2-b7fd-77885633cfbe";
     const environment = "usw2.pure.cloud";
     const redirectUri = window.location.origin + window.location.pathname;
+    const appContainer = document.getElementById('appContainer');
 
     /* ================= HANDLE CALLBACK ================= */
     if (window.location.hash.includes('access_token')) {
@@ -54,20 +55,16 @@
             authButton.className = 'auth-button logout';
             authButton.onclick = logout;
 
-            loginContainer.style.display = 'none';
             appContainer.style.display = 'block';
         } else {
             authButton.textContent = 'Login';
             authButton.className = 'auth-button login';
             authButton.onclick = login;
 
-            loginContainer.style.display = 'flex';
             appContainer.style.display = 'none';
         }
     }
-
     renderAuthButton();
-
 
     /* ================= UPLOAD LOGIC ================= */
     const fileInput = document.getElementById('fileInput');
@@ -152,6 +149,7 @@
     };
 
     render();
+
 
 
 
