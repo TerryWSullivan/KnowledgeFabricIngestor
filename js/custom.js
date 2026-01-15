@@ -46,27 +46,29 @@
         sessionStorage.removeItem('token_expiry');
         location.reload();
     }
-
     const authButton = document.getElementById('authButton');
 
     function renderAuthButton() {
         if (isAuthenticated()) {
             authButton.textContent = 'Logout';
             authButton.className = 'auth-button logout';
-            authButton.onclick = () => {
-                sessionStorage.removeItem('access_token');
-                sessionStorage.removeItem('token_expiry');
-                updateAuthUI();
-                renderAuthButton();
-            };
+            authButton.onclick = logout;
+
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'block';
         } else {
             authButton.textContent = 'Login';
             authButton.className = 'auth-button login';
             authButton.onclick = login;
+
+            loginContainer.style.display = 'flex';
+            appContainer.style.display = 'none';
         }
     }
 
-renderAuthButton();
+    renderAuthButton();
+
+
     /* ================= UPLOAD LOGIC ================= */
     const fileInput = document.getElementById('fileInput');
     const browseFilesLink = document.getElementById('browseFilesLink');
@@ -150,6 +152,7 @@ renderAuthButton();
     };
 
     render();
+
 
 
 
