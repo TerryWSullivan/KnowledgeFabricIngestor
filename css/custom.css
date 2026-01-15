@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
 body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            font-family: Roboto, sans-serif;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-family: Roboto, sans-serif;
     }
     .branding {
       display: flex;
@@ -33,26 +33,26 @@ body {
   height: 38px; 
   margin-right: 8px; 
 }
-  header {
-            background-color: #ffffff;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+header {
+        background-color: #ffffff;
+       	padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        #logo {
-            height: 40px;
-        }
-        .user-info, .login-button {
-            display: flex;        
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font: Roboto;
-        }
-        button {
+#logo {
+        height: 40px;
+    }
+    .user-info, .login-button {
+        display: flex;        
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font: Roboto;
+    }
+    button {
             padding: 8px 16px;
             font-size: 14px;
             cursor: pointer;
@@ -106,14 +106,92 @@ body {
             font: Roboto;        
             margin: 20px 0 10px 0;
         }
+
+        /* ================= APP ================= */
+        .app-container {
+            display: none;
+        }
+
+        .upload-section {
+            margin: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            max-width: 720px;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-count {
+            background: #f1f1f1;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .drop-zone {
+            margin-top: 15px;
+            padding: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            text-align: center;
+            color: #777;
+        }
+
+        .drop-zone.dragover {
+            border-color: #ff4f1f;
+            background: #fff5f2;
+            color: #ff4f1f;
+        }
+
+        .drop-zone a {
+            color: #ff4f1f;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+        }
+
+        .file-item button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        .upload-actions {
+            margin-top: 20px;
+        }
+
+        #uploadBtn {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #uploadBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
 		.upload-results {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #cce5cc;
-    background: #f4fff4;
-    border-radius: 6px;
-    display: none;
-}
+    		margin-top: 20px;
+    		padding: 15px;
+    		border: 1px solid #cce5cc;
+    		background: #f4fff4;
+    		border-radius: 6px;
+    		display: none;
+		}
 
 	.upload-results.success {
 		display: block;
@@ -141,4 +219,5 @@ body {
 		justify-content: center;
 		font-weight: bold;
 		flex-shrink: 0;
+
 	}
