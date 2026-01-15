@@ -14,9 +14,43 @@
             margin: 0;
         }
 
+        /* ================= HEADER ================= */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #logo {
+            height: 40px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #headerRight .branding {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .branding-logo img,
+        .branding-icon img {
+            height: 20px;
+        }
+
+        .branding-text {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
         /* ================= LOGIN ================= */
         .login-container {
-            height: 100vh;
+            height: calc(100vh - 80px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,23 +65,6 @@
         /* ================= APP ================= */
         .app-container {
             display: none;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            padding: 12px 24px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        #logo {
-            height: 40px;
-        }
-
-        .page-title {
-            margin-left: 20px;
-            font-size: 18px;
-            font-weight: bold;
         }
 
         .upload-section {
@@ -158,6 +175,29 @@
 </head>
 <body>
 
+<!-- ================= SHARED HEADER ================= -->
+<header>
+    <div>
+        <a href="https://www.genesys.com/" target="_blank">
+            <img id="logo"
+                 src="https://www.genesys.com/wp-content/themes/genesys-kraken/logo/genesys-com-full-color.svg"
+                 alt="Genesys Logo">
+        </a>
+    </div>
+    <div class="page-title">Knowledge Fabric - File Upload</div>
+    <div id="headerRight">
+        <div class="branding">
+            <div class="branding-logo">
+                <img src="images/adaptive-g-orange.png" alt="Adaptive G Logo">
+            </div>
+            <span class="branding-text">AI Studio</span>
+            <div class="branding-icon">
+                <img src="images/sparkles-solid.svg" alt="Sparkles Icon">
+            </div>
+        </div>
+    </div>
+</header>
+
 <!-- ================= LOGIN ================= -->
 <div class="login-container" id="loginContainer">
     <button id="loginButton">Login</button>
@@ -165,15 +205,6 @@
 
 <!-- ================= APP ================= -->
 <div class="app-container" id="appContainer">
-
-    <header>
-        <a href="https://www.genesys.com/" target="_blank">
-            <img id="logo"
-                 src="https://www.genesys.com/wp-content/themes/genesys-kraken/logo/genesys-com-full-color.svg"
-                 alt="Genesys Logo">
-        </a>
-        <div class="page-title">Knowledge Fabric - File Upload</div>
-    </header>
 
     <section class="upload-section">
 
@@ -205,9 +236,8 @@
 <script>
     /* ================= OAUTH ================= */
     const clientId = "a08af3d6-15a6-48a2-b7fd-77885633cfbe";
-    const redirectUri = window.location.origin + window.location.pathname;
     const environment = "usw2.pure.cloud";
-    console.log(`Redirect URL: ${redirectUri}`);
+    const redirectUri = window.location.origin + window.location.pathname;
 
     document.getElementById("loginButton").onclick = () => {
         const authUrl =
@@ -220,12 +250,31 @@
         window.location.href = authUrl;
     };
 
-    /* ================= AUTH CHECK (STUB) ================= */
-    const isAuthenticated = false;
+    /* ================= HANDLE CALLBACK ================= */
+    if (window.location.hash.includes('access_token')) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        const token = params.get('access_token');
+        const expiresIn = params.get('expires_in');
+
+        if (token) {
+            sessionStorage.setItem('access_token', token);
+            if (expiresIn) {
+                sessionStorage.setItem(
+                    'token_expiry',
+                    Date.now() + (parseInt(expiresIn, 10) * 1000)
+                );
+            }
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    const token = sessionStorage.getItem('access_token');
+    const expiry = sessionStorage.getItem('token_expiry');
+    const isAuthenticated = token && (!expiry || Date.now() < parseInt(expiry, 10));
 
     if (isAuthenticated) {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('appContainer').style.display = 'block';
+        loginContainer.style.display = 'none';
+        appContainer.style.display = 'block';
     }
 
     /* ================= UPLOAD LOGIC ================= */
@@ -289,14 +338,6 @@
     uploadBtn.onclick = () => {
         uploadBtn.disabled = true;
 
-        console.log('Upload JSON:', selectedFiles.map(file => ({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            relativePath: file.webkitRelativePath || '',
-            uri: `client://uploads/${file.webkitRelativePath || file.name}`
-        })));
-
         const results = document.getElementById('uploadResults');
         const list = document.getElementById('uploadResultsList');
         list.innerHTML = '';
@@ -323,4 +364,3 @@
 
 </body>
 </html>
-
