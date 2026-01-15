@@ -52,7 +52,7 @@
             window.location.origin + window.location.pathname
         );
         window.location.href =
-            `https://login.${environment}/logout?redirect_uri=${returnUrl}`;
+            `https://login.${environment}/logout?client_id=${clientId}&redirect_uri=${returnUrl}`;
         }
 
     const authButton = document.getElementById('authButton');
@@ -157,6 +157,7 @@
     };
 
     render();
+
 
 
 
