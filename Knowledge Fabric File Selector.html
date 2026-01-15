@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon"
+          href="https://www.genesys.com/wp-content/themes/genesys-kraken/logo/favicon32.png"
+          sizes="32x32"
+          type="image/png">
+    <title>Genesys - Knowledge Fabric</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        /* ================= LOGIN ================= */
+        .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loginButton {
+            padding: 16px 32px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* ================= APP ================= */
+        .app-container {
+            display: none;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #logo {
+            height: 40px;
+        }
+
+        .page-title {
+            margin-left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .upload-section {
+            margin: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            max-width: 720px;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-count {
+            background: #f1f1f1;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .drop-zone {
+            margin-top: 15px;
+            padding: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            text-align: center;
+            color: #777;
+        }
+
+        .drop-zone.dragover {
+            border-color: #ff4f1f;
+            background: #fff5f2;
+            color: #ff4f1f;
+        }
+
+        .drop-zone a {
+            color: #ff4f1f;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+        }
+
+        .file-item button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        .upload-actions {
+            margin-top: 20px;
+        }
+
+        #uploadBtn {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #uploadBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ================= RESULTS ================= */
+        .upload-results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #cce5cc;
+            background: #f4fff4;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .upload-results.success {
+            display: block;
+        }
+
+        .upload-result-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #28a745;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div class="login-container" id="loginContainer">
+    <button id="loginButton">Login</button>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app-container" id="appContainer">
+
+    <header>
+        <a href="https://www.genesys.com/" target="_blank">
+            <img id="logo"
+                 src="https://www.genesys.com/wp-content/themes/genesys-kraken/logo/genesys-com-full-color.svg"
+                 alt="Genesys Logo">
+        </a>
+        <div class="page-title">Knowledge Fabric - File Upload</div>
+    </header>
+
+    <section class="upload-section">
+
+        <div class="upload-header">
+            <h2>Upload Files</h2>
+            <span class="file-count" id="fileCount">0 files</span>
+        </div>
+
+        <input type="file" id="fileInput" multiple hidden>
+
+        <div class="drop-zone" id="dropZone">
+            Drag & drop files here or
+            <a id="browseFilesLink">browse files</a>
+        </div>
+
+        <div id="fileList"></div>
+
+        <div class="upload-actions">
+            <button id="uploadBtn" disabled>Upload</button>
+        </div>
+
+        <div class="upload-results" id="uploadResults">
+            <div id="uploadResultsList"></div>
+        </div>
+
+    </section>
+</div>
+
+<script>
+    /* ================= OAUTH ================= */
+    const clientId = "a08af3d6-15a6-48a2-b7fd-77885633cfbe";
+    const redirectUri = window.location.origin + window.location.pathname;
+    const environment = "usw2.pure.cloud";
+
+    document.getElementById("loginButton").onclick = () => {
+        const authUrl =
+            `https://login.${environment}/oauth/authorize` +
+            `?response_type=token` +
+            `&client_id=${encodeURIComponent(clientId)}` +
+            `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+            `&scope=architect%20users%20notifications`;
+
+        window.location.href = authUrl;
+    };
+
+    /* ================= AUTH CHECK (STUB) ================= */
+    const isAuthenticated = false;
+
+    if (isAuthenticated) {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'block';
+    }
+
+    /* ================= UPLOAD LOGIC ================= */
+    const fileInput = document.getElementById('fileInput');
+    const browseFilesLink = document.getElementById('browseFilesLink');
+    const dropZone = document.getElementById('dropZone');
+    const fileListDiv = document.getElementById('fileList');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileCount = document.getElementById('fileCount');
+
+    let selectedFiles = [];
+
+    browseFilesLink.onclick = () => fileInput.click();
+    fileInput.onchange = e => handleFiles(e.target.files);
+
+    dropZone.ondragover = e => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    };
+
+    dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+
+    dropZone.ondrop = e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    };
+
+    function handleFiles(files) {
+        Array.from(files).forEach(file => {
+            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                selectedFiles.push(file);
+            }
+        });
+        fileInput.value = '';
+        render();
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        render();
+    }
+
+    function render() {
+        fileCount.textContent = `${selectedFiles.length} files`;
+        uploadBtn.disabled = selectedFiles.length === 0;
+
+        if (selectedFiles.length === 0) {
+            fileListDiv.innerHTML = '<p>No files selected.</p>';
+            return;
+        }
+
+        fileListDiv.innerHTML = selectedFiles.map((file, i) => `
+            <div class="file-item">
+                <span><strong>${file.name}</strong></span>
+                <button onclick="removeFile(${i})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    uploadBtn.onclick = () => {
+        uploadBtn.disabled = true;
+
+        console.log('Upload JSON:', selectedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            relativePath: file.webkitRelativePath || '',
+            uri: `client://uploads/${file.webkitRelativePath || file.name}`
+        })));
+
+        const results = document.getElementById('uploadResults');
+        const list = document.getElementById('uploadResultsList');
+        list.innerHTML = '';
+
+        selectedFiles.forEach(file => {
+            list.innerHTML += `
+                <div class="upload-result-item">
+                    <div class="checkmark">✓</div>
+                    <div>
+                        <strong>${file.name}</strong><br>
+                        File successfully uploaded
+                    </div>
+                </div>
+            `;
+        });
+
+        results.classList.add('success');
+        selectedFiles = [];
+        render();
+    };
+
+    render();
+</script>
+
+</body>
+</html>
