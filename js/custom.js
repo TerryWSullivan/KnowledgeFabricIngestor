@@ -29,6 +29,24 @@
 
         return token && (!expiry || Date.now() < parseInt(expiry, 10));
     }
+
+    function login() {
+    const authUrl =
+        `https://login.${environment}/oauth/authorize` +
+        `?response_type=token` +
+        `&client_id=${encodeURIComponent(clientId)}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&scope=architect%20users%20notifications`;
+
+        window.location.href = authUrl;
+    }
+
+    function logout() {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('token_expiry');
+        location.reload();
+    }
+
     function updateAuthUI() {
         if (isAuthenticated()) {
             loginContainer.style.display = 'none';
@@ -60,7 +78,6 @@
     }
 
 renderAuthButton();
-updateAuthUI();
     /* ================= UPLOAD LOGIC ================= */
     const fileInput = document.getElementById('fileInput');
     const browseFilesLink = document.getElementById('browseFilesLink');
@@ -144,5 +161,6 @@ updateAuthUI();
     };
 
     render();
+
 
 
