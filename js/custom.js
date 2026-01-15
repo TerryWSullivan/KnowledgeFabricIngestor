@@ -34,13 +34,44 @@
 
     const token = sessionStorage.getItem('access_token');
     const expiry = sessionStorage.getItem('token_expiry');
-    const isAuthenticated = token && (!expiry || Date.now() < parseInt(expiry, 10));
+    function isAuthenticated() {
+        const token = sessionStorage.getItem('access_token');
+        const expiry = sessionStorage.getItem('token_expiry');
 
-    if (isAuthenticated) {
-        loginContainer.style.display = 'none';
-        appContainer.style.display = 'block';
+        return token && (!expiry || Date.now() < parseInt(expiry, 10));
+    }
+    function updateAuthUI() {
+        if (isAuthenticated()) {
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'block';
+        } else {
+            loginContainer.style.display = 'flex';
+            appContainer.style.display = 'none';
+        }
+    }
+    updateAuthUI();
+
+    const authButton = document.getElementById('authButton');
+
+    function renderAuthButton() {
+        if (isAuthenticated()) {
+            authButton.textContent = 'Logout';
+            authButton.className = 'auth-button logout';
+            authButton.onclick = () => {
+                sessionStorage.removeItem('access_token');
+                sessionStorage.removeItem('token_expiry');
+                updateAuthUI();
+                renderAuthButton();
+            };
+        } else {
+            authButton.textContent = 'Login';
+            authButton.className = 'auth-button login';
+            authButton.onclick = login;
+        }
     }
 
+renderAuthButton();
+updateAuthUI();
     /* ================= UPLOAD LOGIC ================= */
     const fileInput = document.getElementById('fileInput');
     const browseFilesLink = document.getElementById('browseFilesLink');
@@ -124,3 +155,4 @@
     };
 
     render();
+
