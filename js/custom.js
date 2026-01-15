@@ -47,17 +47,6 @@
         location.reload();
     }
 
-    function updateAuthUI() {
-        if (isAuthenticated()) {
-            loginContainer.style.display = 'none';
-            appContainer.style.display = 'block';
-        } else {
-            loginContainer.style.display = 'flex';
-            appContainer.style.display = 'none';
-        }
-    }
-    updateAuthUI();
-
     const authButton = document.getElementById('authButton');
 
     function renderAuthButton() {
@@ -161,6 +150,7 @@ renderAuthButton();
     };
 
     render();
+
 
 
 
