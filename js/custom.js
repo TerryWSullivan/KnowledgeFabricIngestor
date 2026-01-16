@@ -137,6 +137,7 @@
             </div>
         `).join('');
     }
+
 /* Function to create a new knowledge Source in GC */
 async function createKnowledgeSource() {
     const token = sessionStorage.getItem('access_token');
@@ -168,8 +169,36 @@ async function createKnowledgeSource() {
 
     return response.json();
 }
+/* function to create new knowledge synchronization session */
 
-    uploadBtn.onclick = async () => {
+async function createSynchronizationSession(sourceId) {
+    const token = sessionStorage.getItem('access_token');
+
+    if (!token) {
+        throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(
+        `https://api.usw2.pure.cloud/api/v2/knowledge/sources/${sourceId}/synchronizations`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Create synchronization failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
+
+/* hanlde upload button click */
+uploadBtn.onclick = async () => {
     uploadBtn.disabled = true;
 
     try {
@@ -177,7 +206,11 @@ async function createKnowledgeSource() {
         const source = await createKnowledgeSource();
         console.log('Knowledge Source created:', source);
 
-        // Existing stubbed success UI (leave as-is for now)
+        // STEP 2: Create Synchronization Session
+        const sync = await createSynchronizationSession(source.id);
+        console.log('Synchronization session created:', sync);
+
+        // TEMP: stub success UI (files not uploaded yet)
         const results = document.getElementById('uploadResults');
         const list = document.getElementById('uploadResultsList');
         list.innerHTML = '';
@@ -188,7 +221,7 @@ async function createKnowledgeSource() {
                     <div class="checkmark">✓</div>
                     <div>
                         <strong>${file.name}</strong><br>
-                        File successfully uploaded
+                        Ready for upload (sync session created)
                     </div>
                 </div>
             `;
@@ -200,12 +233,14 @@ async function createKnowledgeSource() {
 
     } catch (err) {
         console.error(err);
-        alert('Failed to create Knowledge Source');
+        alert('Failed during knowledge synchronization setup');
         uploadBtn.disabled = false;
     }
 };
 
+
     render();
+
 
 
 
