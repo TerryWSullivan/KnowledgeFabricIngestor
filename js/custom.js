@@ -137,10 +137,47 @@
             </div>
         `).join('');
     }
+/* Function to create a new knowledge Source in GC */
+async function createKnowledgeSource() {
+    const token = sessionStorage.getItem('access_token');
 
-    uploadBtn.onclick = () => {
-        uploadBtn.disabled = true;
+    if (!token) {
+        throw new Error('Not authenticated');
+    }
 
+    const response = await fetch(
+        'https://api.usw2.pure.cloud/api/v2/knowledge/sources',
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: 'API-Explorer Source',
+                type: 'FileUpload',
+                triggerType: 'Manual'
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Create source failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
+
+    uploadBtn.onclick = async () => {
+    uploadBtn.disabled = true;
+
+    try {
+        // STEP 1: Create Knowledge Source
+        const source = await createKnowledgeSource();
+        console.log('Knowledge Source created:', source);
+
+        // Existing stubbed success UI (leave as-is for now)
         const results = document.getElementById('uploadResults');
         const list = document.getElementById('uploadResultsList');
         list.innerHTML = '';
@@ -160,9 +197,16 @@
         results.classList.add('success');
         selectedFiles = [];
         render();
-    };
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to create Knowledge Source');
+        uploadBtn.disabled = false;
+    }
+};
 
     render();
+
 
 
 
