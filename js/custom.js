@@ -59,13 +59,19 @@
 
     function renderAuthButton() {
         if (isAuthenticated()) {
-            authButton.textContent = 'Logout';
+            authButton.innerHTML = `
+            <img src="images/white-logout-vector.png" alt="" class="auth-icon">
+            <span>Logout</span>
+            `;
             authButton.className = 'auth-button logout';
             authButton.onclick = logout;
 
             appContainer.style.display = 'block';
         } else {
-            authButton.textContent = 'Login';
+            authButton.innerHTML = `
+            <img src="images/white-login-vector.png" alt="" class="auth-icon">
+            <span>Logout</span>
+            `;
             authButton.className = 'auth-button login';
             authButton.onclick = login;
 
@@ -157,6 +163,7 @@
     };
 
     render();
+
 
 
 
