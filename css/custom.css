@@ -43,7 +43,7 @@ header {
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 #logo {
-        height: 40px;
+        height: 30px;
     }
     .user-info, .login-button {
         display: flex;        
@@ -264,6 +264,7 @@ header {
     width: 16px;
     height: 16px;
 }
+
 
 
 
