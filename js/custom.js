@@ -60,7 +60,7 @@
     function renderAuthButton() {
         if (isAuthenticated()) {
             authButton.innerHTML = `
-            <img src="images/white-logout-vector.png" alt="" class="auth-icon">
+            <img src="images/white-login-vector.png" alt="Settings" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
             <span>Logout</span>
             `;
             authButton.className = 'auth-button logout';
@@ -163,6 +163,7 @@
     };
 
     render();
+
 
 
 
