@@ -70,7 +70,7 @@
         } else {
             authButton.innerHTML = `
             <img src="images/white-login-vector.png" alt="Settings" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; background:#0077cc">
-            <span>Logout</span>
+            <span>Login</span>
             `;
             authButton.className = 'auth-button login';
             authButton.onclick = login;
@@ -163,6 +163,7 @@
     };
 
     render();
+
 
 
 
