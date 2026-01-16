@@ -63,7 +63,7 @@
             <img src="images/white-login-vector.png" alt="Settings" style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
             <span>Logout</span>
             `;
-            authButton.className = 'auth-button logout';
+            /*authButton.className = 'auth-button logout';*/
             authButton.onclick = logout;
 
             appContainer.style.display = 'block';
@@ -163,6 +163,7 @@
     };
 
     render();
+
 
 
 
