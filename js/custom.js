@@ -3,6 +3,7 @@
     const environment = "usw2.pure.cloud";
     const redirectUri = window.location.origin + window.location.pathname;
     const appContainer = document.getElementById('appContainer');
+    const genesysApiBaseUrl = 'https://api.usw2.pure.cloud/api';
 
     /* ================= HANDLE CALLBACK ================= */
     if (window.location.hash.includes('access_token')) {
@@ -147,7 +148,7 @@ async function createKnowledgeSource() {
     }
 
     const response = await fetch(
-        'https://api.usw2.pure.cloud/api/v2/knowledge/sources',
+        `${genesysApiBaseUrl}/v2/knowledge/sources`,
         {
             method: 'POST',
             headers: {
@@ -179,7 +180,7 @@ async function createSynchronizationSession(sourceId) {
     }
 
     const response = await fetch(
-        `https://api.usw2.pure.cloud/api/v2/knowledge/sources/${sourceId}/synchronizations`,
+        `${genesysApiBaseUrl}/v2/knowledge/sources/${sourceId}/synchronizations`,
         {
             method: 'POST',
             headers: {
@@ -240,6 +241,7 @@ uploadBtn.onclick = async () => {
 
 
     render();
+
 
 
 
