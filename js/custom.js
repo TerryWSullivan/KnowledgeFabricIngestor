@@ -242,6 +242,23 @@ async function requestPresignedUploadUrl(sourceId, synchronizationId, fileName) 
     return response.json();
 }
 
+/* Function to upload file to presigned URL*/
+async function uploadFileToPresignedUrl(uploadInfo, file) {
+    const response = await fetch(uploadInfo.url, {
+        method: 'PUT',
+        headers: {
+            ...uploadInfo.headers,
+            'Content-Type': file.type || 'application/octet-stream'
+        },
+        body: file
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`File upload failed: ${response.status} ${text}`);
+    }
+}
+
 /* hanlde upload button click */
 uploadBtn.onclick = async () => {
     uploadBtn.disabled = true;
@@ -260,17 +277,22 @@ uploadBtn.onclick = async () => {
         const sync = await createSynchronizationSession(source.id);
         console.log('Synchronization session created:', sync);
 
-        // STEP 3a: Request presigned upload URL for each file
+        // STEP 3: For each file → get presigned URL → upload bytes
         for (const file of selectedFiles) {
             const safeFileName = normalizeFileName(file.name);
             console.log('Fetching upload url for file:', safeFileName);
 
+            // 3a: Request presigned upload URL
             const uploadInfo = await requestPresignedUploadUrl(
                 source.id,
                 sync.id,
                 safeFileName
             );
+
             console.log(`Presigned upload URL for ${file.name}:`, uploadInfo);
+
+            // 3b: Upload file bytes
+            await uploadFileToPresignedUrl(uploadInfo, file);
 
             // Update Results UI
             list.innerHTML += `
@@ -278,23 +300,25 @@ uploadBtn.onclick = async () => {
                     <div class="checkmark">✓</div>
                     <div>
                         <strong>${file.name}</strong><br>
-                        Upload slot created
+                        File uploaded successfully
                     </div>
                 </div>
             `;
         }
 
-        // Clear file selection AFTER successful setup
+        // Clear file selection AFTER successful uploads
         selectedFiles = [];
         render();
 
     } catch (err) {
         console.error(err);
-        alert('Failed during Knowledge Fabric upload setup');
+        alert('File upload failed. See console for details.');
         uploadBtn.disabled = false;
     }
 };
+
 render();
+
 
 
 
