@@ -138,6 +138,21 @@
             </div>
         `).join('');
     }
+/* Function to normalize file names */
+function normalizeFileName(fileName) {
+    const parts = fileName.split('.');
+    const extension = parts.pop();
+    const baseName = parts.join('.');
+
+    return (
+        baseName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')   // replace spaces & symbols
+            .replace(/_+/g, '_')           // collapse underscores
+            .replace(/^_|_$/g, '')         // trim underscores
+        + '.' + extension.toLowerCase()
+    );
+}
 
 /* Function to create a new knowledge Source in GC */
 async function createKnowledgeSource() {
@@ -247,12 +262,14 @@ uploadBtn.onclick = async () => {
 
         // STEP 3a: Request presigned upload URL for each file
         for (const file of selectedFiles) {
-             const uploadInfo = await requestPresignedUploadUrl(
+            const safeFileName = normalizeFileName(file.name);
+            console.log('Fetching upload url for file:', safeFileName);
+
+            const uploadInfo = await requestPresignedUploadUrl(
                 source.id,
                 sync.id,
-                file.name
-            ); 
-
+                safeFileName
+            );
             console.log(`Presigned upload URL for ${file.name}:`, uploadInfo);
 
             // Update Results UI
@@ -278,6 +295,7 @@ uploadBtn.onclick = async () => {
     }
 };
 render();
+
 
 
 
