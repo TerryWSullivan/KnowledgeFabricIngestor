@@ -197,10 +197,44 @@ async function createSynchronizationSession(sourceId) {
 
     return response.json();
 }
+/* Function get get presigned URL for a file upload */
+async function requestPresignedUploadUrl(sourceId, synchronizationId, fileName) {
+    const token = sessionStorage.getItem('access_token');
+
+    if (!token) {
+        throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(
+        `${genesysApiBaseUrl}/v2/knowledge/sources/${sourceId}/synchronizations/${synchronizationId}/uploads`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fileName: fileName
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Presigned URL request failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
 
 /* hanlde upload button click */
 uploadBtn.onclick = async () => {
     uploadBtn.disabled = true;
+
+    const results = document.getElementById('uploadResults');
+    const list = document.getElementById('uploadResultsList');
+    list.innerHTML = '';
+    results.classList.add('success');
 
     try {
         // STEP 1: Create Knowledge Source
@@ -211,36 +245,40 @@ uploadBtn.onclick = async () => {
         const sync = await createSynchronizationSession(source.id);
         console.log('Synchronization session created:', sync);
 
-        // TEMP: stub success UI (files not uploaded yet)
-        const results = document.getElementById('uploadResults');
-        const list = document.getElementById('uploadResultsList');
-        list.innerHTML = '';
+        // STEP 3a: Request presigned upload URL for each file
+        for (const file of selectedFiles) {
+            const uploadInfo = await requestPresignedUploadUrl(
+                source.id,
+                sync.id,
+                file.name
+            );
 
-        selectedFiles.forEach(file => {
+            console.log(`Presigned upload URL for ${file.name}:`, uploadInfo);
+
+            // Update Results UI
             list.innerHTML += `
                 <div class="upload-result-item">
                     <div class="checkmark">✓</div>
                     <div>
                         <strong>${file.name}</strong><br>
-                        Ready for upload (sync session created)
+                        Upload slot created
                     </div>
                 </div>
             `;
-        });
+        }
 
-        results.classList.add('success');
+        // Clear file selection AFTER successful setup
         selectedFiles = [];
         render();
 
     } catch (err) {
         console.error(err);
-        alert('Failed during knowledge synchronization setup');
+        alert('Failed during Knowledge Fabric upload setup');
         uploadBtn.disabled = false;
     }
 };
+render();
 
-
-    render();
 
 
 
