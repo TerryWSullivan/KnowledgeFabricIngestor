@@ -247,13 +247,13 @@ uploadBtn.onclick = async () => {
 
         // STEP 3a: Request presigned upload URL for each file
         for (const file of selectedFiles) {
-            const uploadInfo = await requestPresignedUploadUrl(
+            /* const uploadInfo = await requestPresignedUploadUrl(
                 source.id,
                 sync.id,
                 file.name
-            );
+            ); */
 
-            console.log(`Presigned upload URL for ${file.name}:`, uploadInfo);
+            console.log(`Presigned upload URL for ${file.name}:`);
 
             // Update Results UI
             list.innerHTML += `
@@ -278,6 +278,7 @@ uploadBtn.onclick = async () => {
     }
 };
 render();
+
 
 
 
