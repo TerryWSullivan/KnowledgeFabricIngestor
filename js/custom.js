@@ -243,25 +243,29 @@ async function requestPresignedUploadUrl(sourceId, synchronizationId, fileName) 
 }
 
 /* Function to upload file to presigned URL*/
-async function uploadFileToPresignedUrl(uploadInfo, file) {
-    const response = await fetch(uploadInfo.url, {
-        method: 'PUT',
-        mode: 'no-cors', // ✅ critical
-        headers: {
-            ...uploadInfo.headers
-            // ❌ DO NOT set Content-Type here
-        },
-        body: file
+function uploadFileToPresignedUrl(uploadInfo, file) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('PUT', uploadInfo.url, true);
+
+        // Required headers from Genesys
+        Object.entries(uploadInfo.headers).forEach(([key, value]) => {
+            xhr.setRequestHeader(key, value);
+        });
+
+        // Success = request completed (status may be opaque)
+        xhr.onload = () => {
+            resolve();
+        };
+
+        xhr.onerror = () => {
+            reject(new Error('File upload failed'));
+        };
+
+        xhr.send(file);
     });
-
-    // In no-cors mode:
-    // - response.ok is meaningless
-    // - response.status is 0
-    // - success is assumed if no exception is thrown
-
-    return response;
 }
-
 
 /* hanlde upload button click */
 uploadBtn.onclick = async () => {
@@ -322,6 +326,7 @@ uploadBtn.onclick = async () => {
 };
 
 render();
+
 
 
 
