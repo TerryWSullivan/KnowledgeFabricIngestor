@@ -204,7 +204,7 @@ async function requestPresignedUploadUrl(sourceId, synchronizationId, fileName) 
     if (!token) {
         throw new Error('Not authenticated');
     }
-
+    console.log(`Fetching upload url for file: ${fileName}`);
     const response = await fetch(
         `${genesysApiBaseUrl}/v2/knowledge/sources/${sourceId}/synchronizations/${synchronizationId}/uploads`,
         {
@@ -247,13 +247,13 @@ uploadBtn.onclick = async () => {
 
         // STEP 3a: Request presigned upload URL for each file
         for (const file of selectedFiles) {
-            /* const uploadInfo = await requestPresignedUploadUrl(
+             const uploadInfo = await requestPresignedUploadUrl(
                 source.id,
                 sync.id,
                 file.name
-            ); */
+            ); 
 
-            console.log(`Presigned upload URL for ${file.name}:`);
+            console.log(`Presigned upload URL for ${file.name}:`, uploadInfo);
 
             // Update Results UI
             list.innerHTML += `
@@ -278,6 +278,7 @@ uploadBtn.onclick = async () => {
     }
 };
 render();
+
 
 
 
